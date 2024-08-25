@@ -1,9 +1,13 @@
-name: Build Java Project
+# .github/workflows/build.yml
+name: Build with Gradle
 
 on:
   push:
     branches:
-      - '*'
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -19,6 +23,19 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Run build
-      run: echo "Building project..."
-      
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: plugin-jar
+        path: build/libs/*.jar
+
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build/libs
+        
