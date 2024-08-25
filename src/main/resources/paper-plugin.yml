@@ -8,3 +8,4 @@ commands:
     description: Открывает Debug Snow GUI
     usage: /debugsnow
     permission: op
+    
