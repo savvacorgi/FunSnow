@@ -1,27 +1,21 @@
-package com.svo.snowp.commands;
+package com.svo.snowp;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import com.svo.snowp.commands.DebugSnowCommand;
+import com.svo.snowp.listeners.SphereListener;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class DebugSnowCommand implements CommandExecutor {
+public class Snowp extends JavaPlugin {
 
-    private final Snowp plugin;
-
-    public DebugSnowCommand(Snowp plugin) {
-        this.plugin = plugin;
+    @Override
+    public void onEnable() {
+        Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
+        this.getCommand("debugsnow").setExecutor(new DebugSnowCommand());
+        getLogger().info("Snowp plugin enabled.");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            player.sendMessage("Debug Snow GUI открыт!");
-            // Логика открытия GUI или другая логика команды
-        } else {
-            sender.sendMessage("Эту команду может использовать только игрок!");
-        }
-        return true;
+    public void onDisable() {
+        getLogger().info("Snowp plugin disabled.");
     }
 }

@@ -1,14 +1,6 @@
 name: snowp
 main: com.svo.snowp.Snowp
-version: 1.1-SNAPSHOT
+version: 1.0.2-ALPHA
 api-version: 1.21
 commands:
-  debugsnow:
-    description: Открывает Debug Snow GUI
-    usage: /debugsnow
-    permission: snowp.admin
-    permission-message: У вас нет прав для использования этой команды.
-permissions:
-  snowp.admin:
-    description: Позволяет использовать команду /debugsnow
-    default: op
+  debugsnow: {}

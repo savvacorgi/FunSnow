@@ -1,6 +1,5 @@
 package com.svo.snowp.commands;
 
-import com.svo.snowp.Snowp;
 import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class DebugSnowCommand implements CommandExecutor {
 
-    public DebugSnowCommand(Snowp snowp) {
+    public DebugSnowCommand() {
 
     }
 
