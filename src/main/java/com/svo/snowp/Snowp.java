@@ -6,13 +6,20 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.NamespacedKey;
 
 public class Snowp extends JavaPlugin {
+    private EventManager eventManager;
+    private SphereUtils sphereUtils;
+
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
+        eventManager = new EventManager();
+        sphereUtils = new SphereUtils();
 
-        // Create and register recipes if needed
+        // Регистрация слушателя
+        Bukkit.getPluginManager().registerEvents(new SphereListener(eventManager, sphereUtils), this);
+
+        // Создание и регистрация рецептов, если необходимо
         NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
-        ItemStack customSnowBlock = SphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
+        ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
         ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
         recipe.shape("XXX", "XYX", "XXX");
         recipe.setIngredient('X', Material.SNOW_BLOCK);
@@ -22,6 +29,6 @@ public class Snowp extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Cleanup code if needed
+        // Очистка кода, если необходимо
     }
 }
