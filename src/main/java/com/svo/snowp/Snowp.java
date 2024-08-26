@@ -3,6 +3,7 @@ package com.svo.snowp;
 import com.svo.snowp.listeners.BlockPlaceListener;
 import com.svo.snowp.listeners.SphereListener;
 import com.svo.snowp.utils.SphereUtils;
+import com.svo.snowp.utils.TelegramNotifier;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -18,11 +19,15 @@ import java.io.IOException;
 public class Snowp extends JavaPlugin {
 
     private FileConfiguration customConfig;
+    private TelegramNotifier telegramNotifier;
 
     @Override
     public void onEnable() {
         // Создание и загрузка конфигурации
         createCustomConfig();
+
+        // Инициализация TelegramNotifier
+        telegramNotifier = new TelegramNotifier(customConfig.getString("telegram.api-token"), customConfig.getString("telegram.chat-id"));
 
         // Регистрация слушателей событий
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(this), this);
@@ -68,5 +73,10 @@ public class Snowp extends JavaPlugin {
 
     public FileConfiguration getCustomConfig() {
         return this.customConfig;
+    }
+
+    public void notifyEventStarted(String eventName, String eventDescription) {
+        telegramNotifier.sendMessage("Event: " + eventName + "\n" + eventDescription);
+        getLogger().info("Event started: " + eventName + " - " + eventDescription);
     }
 }
