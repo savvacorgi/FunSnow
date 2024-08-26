@@ -1,28 +1,24 @@
 package com.svo.snowp.listeners;
 
-import com.svo.snowp.utils.SphereUtils;
-import org.bukkit.event.EventHandler;
+import com.svo.snowp.Snowp; // Убедитесь, что класс Snowp существует
+import com.svo.snowp.utils.SphereUtils; // Убедитесь, что класс SphereUtils существует
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.entity.Player;
-import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
-public class SphereListener implements Listener {
-
+public class BlockPlaceListener implements Listener {
     private final Snowp plugin;
 
-    public SphereListener(Snowp plugin) {
+    public BlockPlaceListener(Snowp plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Block block = event.getClickedBlock();
+    public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-
-        if (block != null && block.getType() == Material.PLAYER_HEAD) {
-            SphereUtils.openGiftBox(player, new ItemStack(block.getType()), plugin);
-        }
+        ItemStack item = new ItemStack(event.getBlockPlaced().getType());
+        SphereUtils.openGiftBox(player, item, plugin);
     }
 }
