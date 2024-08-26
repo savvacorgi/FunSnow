@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +20,14 @@ public class SphereUtils {
     }
 
     private static void initializeSpheres() {
-        // Сферы
-        spheres.add(new Sphere("Сфера Run Vasa", "Голова Run Vasa", "100683", 0.0, 0.0, 2.0, "Увеличение скорости и прыгучести"));
-        spheres.add(new Sphere("Сфера Шахтёра", "Голова Шахтёра", "100683", 0.0, 0.0, 1.0, "Эффективность +3, скорость +1"));
-        spheres.add(new Sphere("Сфера Ez", "Голова Ez", "100683", 4.0, -3.0, 10.0, "Урон +4, ХП -3, Передвижение +10, Защита +2"));
-        spheres.add(new Sphere("Сфера Скоростного Копания", "Голова Скоростного Копания", "100683", 0.0, -1.0, 3.0, "Увеличение скорости копания"));
-
-        // Пример дополнительных сфер
-        spheres.add(new Sphere("Сфера Стрелка", "Голова Стрелка", "100683", 1.0, 0.0, 2.0, "Увеличение дальнего урона"));
-        spheres.add(new Sphere("Сфера Защитника", "Голова Защитника", "100683", 0.0, 5.0, -1.0, "Увеличение брони, но снижение здоровья"));
-        spheres.add(new Sphere("Сфера Мага", "Голова Мага", "100683", 0.0, 2.0, 3.0, "Увеличение магического урона и здоровья"));
-        spheres.add(new Sphere("Сфера Рыцаря", "Голова Рыцаря", "100683", 3.0, 2.0, 1.0, "Сбалансированное увеличение урона и здоровья"));
-        spheres.add(new Sphere("Сфера Воителя", "Голова Воителя", "100683", 5.0, -2.0, 0.0, "Увеличение урона и скорости"));
+        spheres.add(new Sphere("Sphere Miner", "Miner Head", "100683", 0.0, 0.0, 1.0, "Increased mining speed"));
+        spheres.add(new Sphere("Sphere Diver", "Diver Head", "100683", 0.0, 0.0, 1.0, "Increased underwater speed"));
+        spheres.add(new Sphere("Sphere Builder", "Builder Head", "100683", 0.0, 0.0, 1.0, "Increased building speed"));
+        spheres.add(new Sphere("Sphere Explorer", "Explorer Head", "100683", 0.0, 0.0, 1.0, "Increased exploration speed"));
+        spheres.add(new Sphere("Sphere Warrior", "Warrior Head", "100683", 1.0, 0.0, 1.0, "Increased combat ability"));
+        spheres.add(new Sphere("Sphere Archer", "Archer Head", "100683", 0.0, 0.0, 1.0, "Increased archery skills"));
+        spheres.add(new Sphere("Sphere Mage", "Mage Head", "100683", 0.0, 0.0, 1.0, "Increased magical abilities"));
+        spheres.add(new Sphere("Sphere Knight", "Knight Head", "100683", 0.0, 0.0, 1.0, "Balanced combat skills"));
     }
 
     public static void openGiftBox(Player player, ItemStack item) {
@@ -77,19 +72,5 @@ public class SphereUtils {
                 block.getState().update();
             }
         }
-    }
-
-    public static void removeGiftBoxes(World world) {
-        for (Location location : getAllGiftLocations(world)) {
-            Block block = world.getBlockAt(location);
-            if (block.getType() == Material.PLAYER_HEAD) {
-                block.setType(Material.AIR);
-            }
-        }
-    }
-
-    private static List<Location> getAllGiftLocations(World world) {
-        // Implement this method to return all locations where gifts are spawned.
-        return new ArrayList<>();
     }
 }
