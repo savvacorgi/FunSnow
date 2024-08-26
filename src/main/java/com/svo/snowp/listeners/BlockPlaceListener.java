@@ -2,36 +2,30 @@ package com.svo.snowp.listeners;
 
 import com.svo.snowp.Snowp;
 import com.svo.snowp.utils.SphereUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class BlockPlaceListener implements Listener {
 
-    private final Snowp plugin;
+    private final JavaPlugin plugin;
 
-    public BlockPlaceListener(Snowp plugin) {
+    public BlockPlaceListener(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        ItemStack itemInHand = event.getItemInHand();
-        Player player = event.getPlayer();
+        Block block = event.getBlockPlaced();
+        if (block.getType() == Material.SNOW_BLOCK && event.getPlayer().hasPermission("snowp.startevent")) {
+            // Удаляем блок
+            block.setType(Material.AIR);
 
-        // Проверяем, является ли предмет "Happy New Year Firework"
-        if (itemInHand != null && itemInHand.getType() == Material.FIREWORK_ROCKET) {
-            ItemMeta meta = itemInHand.getItemMeta();
-            if (meta != null && ChatColor.stripColor(meta.getDisplayName()).equalsIgnoreCase("Happy New Year Firework")) {
-                // Запускаем событие Нового года
-                SphereUtils.startNewYearEvent(player, plugin);
-                event.setCancelled(true); // Отменяем установку блока
-            }
+            // Запускаем ивент
+            SphereUtils.startNewYearEvent(plugin, block.getWorld());
         }
     }
 }
