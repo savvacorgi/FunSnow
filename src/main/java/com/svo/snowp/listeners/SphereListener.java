@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class SphereListener implements Listener {
     private final Snowp plugin;
@@ -18,11 +19,20 @@ public class SphereListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
         Player player = event.getPlayer();
-        ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
-        if (itemInHand != null && itemInHand.getType() == Material.PLAYER_HEAD) {
-            SphereUtils.applyCustomEffects(player, itemInHand);
+        if (item != null && item.getType() == Material.PLAYER_HEAD) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null && meta.getDisplayName().equals("§dPresent Magenta")) {
+                event.setCancelled(true);  // Отменяем стандартное действие
+
+                // Убираем кейс
+                item.setAmount(0);
+
+                // Выдаем случайную сферу
+                SphereUtils.giveRandomSphere(player);
+            }
         }
     }
 }
