@@ -3,14 +3,12 @@ package com.svo.snowp.listeners;
 import com.svo.snowp.Snowp;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class BlockPlaceListener implements Listener {
-
     private final Snowp plugin;
 
     public BlockPlaceListener(Snowp plugin) {
@@ -19,13 +17,21 @@ public class BlockPlaceListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        ItemStack itemInHand = player.getInventory().getItemInMainHand();
-        Block placedBlock = event.getBlockPlaced();
+        Block block = event.getBlockPlaced();
+        Block below = block.getRelative(BlockFace.DOWN);
 
-        if (itemInHand.getType() == Material.DIAMOND_BLOCK && itemInHand.getItemMeta().hasEnchant(org.bukkit.enchantments.Enchantment.LUCK)) {
-            plugin.startNewYearEvent();
-            placedBlock.setType(Material.AIR); // Remove the block after placing
+        // Проверяем, что игрок поставил алмазный блок и окружен ли он снегом
+        if (block.getType() == Material.DIAMOND_BLOCK && isSurroundedBySnow(below)) {
+            block.setType(Material.AIR); // Удаляем алмазный блок
+            plugin.startNewYearEvent(); // Запускаем ивент
         }
+    }
+
+    private boolean isSurroundedBySnow(Block block) {
+        // Проверяем, окружен ли алмазный блок снежными блоками
+        return block.getRelative(BlockFace.NORTH).getType() == Material.SNOW_BLOCK &&
+               block.getRelative(BlockFace.SOUTH).getType() == Material.SNOW_BLOCK &&
+               block.getRelative(BlockFace.EAST).getType() == Material.SNOW_BLOCK &&
+               block.getRelative(BlockFace.WEST).getType() == Material.SNOW_BLOCK;
     }
 }
