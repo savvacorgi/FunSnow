@@ -3,7 +3,4 @@ main: com.svo.snowp.Snowp
 version: 1.0.2-ALPHA
 api-version: 1.21
 commands:
-  debugsnow:
-    description: Открывает Debug Snow GUI
-    usage: /debugsnow
-    permission: op
+  debugsnow: {}
