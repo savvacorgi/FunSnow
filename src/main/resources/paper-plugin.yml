@@ -2,3 +2,8 @@ name: snowp
 main: com.svo.snowp.Snowp
 version: 1.0.3-ALPHA
 api-version: '1.21'
+commands:
+  debugsnow:
+    description: Opens the debug snow GUI
+    usage: /debugsnow
+    permission: op
