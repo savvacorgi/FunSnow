@@ -13,29 +13,25 @@ public class EventManager {
     private final Map<Player, Long> eventStartTimes = new HashMap<>();
     private final Map<Player, Long> cooldownEndTimes = new HashMap<>();
 
-    // Проверка, можно ли запустить ивент для игрока
     public boolean canStartEvent(Player player) {
         long now = System.currentTimeMillis();
         if (cooldownEndTimes.containsKey(player)) {
             long cooldownEnd = cooldownEndTimes.get(player);
             if (now < cooldownEnd) {
-                return false; // Находится в кулдауне
+                return false;
             }
         }
         return true;
     }
 
-    // Начало ивента для игрока
     public void startEvent(Player player) {
         long now = System.currentTimeMillis();
         eventStartTimes.put(player, now);
         cooldownEndTimes.put(player, now + COOLDOWN_DURATION);
 
-        // Запуск планировщика для завершения ивента
         scheduleEventEnd(player);
     }
 
-    // Проверка, истекло ли время ивента
     public boolean isEventActive(Player player) {
         if (!eventStartTimes.containsKey(player)) {
             return false;
@@ -45,13 +41,11 @@ public class EventManager {
         return now < eventStart + EVENT_DURATION;
     }
 
-    // Завершение ивента для игрока
     public void endEvent(Player player) {
         eventStartTimes.remove(player);
         player.sendMessage("Event ended.");
     }
 
-    // Планирование завершения ивента
     private void scheduleEventEnd(Player player) {
         new BukkitRunnable() {
             @Override
@@ -60,6 +54,6 @@ public class EventManager {
                     endEvent(player);
                 }
             }
-        }.runTaskLater(YourPlugin.getInstance(), EVENT_DURATION / 50); // Делим на 50, чтобы получить тики
+        }.runTaskLater(YourPlugin.getInstance(), EVENT_DURATION / 50); // Замените YourPlugin на название вашего плагина
     }
 }
