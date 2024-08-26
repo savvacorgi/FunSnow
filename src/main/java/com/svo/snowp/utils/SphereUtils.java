@@ -1,14 +1,12 @@
 package com.svo.snowp.utils;
 
 import com.svo.snowp.Snowp;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,7 +15,6 @@ import java.util.Random;
 
 public class SphereUtils {
 
-    // Применение эффектов сферы к игроку
     public static void applyCustomEffects(Player player, ItemStack item) {
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return;
@@ -104,7 +101,7 @@ public class SphereUtils {
 
     public static void spawnRandomCase(World world) {
         Random random = new Random();
-        if (random.nextInt(100) < 8) { // 8% шанс спавна в чанке
+        if (random.nextInt(100) < 8) { // 8% шанс спавна
             int x = random.nextInt(1000) - 500;
             int z = random.nextInt(1000) - 500;
             int y = world.getHighestBlockYAt(x, z);
@@ -112,37 +109,54 @@ public class SphereUtils {
 
             if (block.getType() == Material.GRASS_BLOCK || block.getType() == Material.SNOW_BLOCK) {
                 block.setType(Material.PLAYER_HEAD);
-                SkullMeta meta = (SkullMeta) block.getState().getData();
-                meta.setDisplayName(ChatColor.GREEN + "Present");
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer("MHF_Present")); // Установить скин с именем
-                block.getState().setData(meta);
+                BlockState state = block.getState();
+                if (state instanceof Skull) {
+                    Skull skull = (Skull) state;
+                    skull.setOwner("PresentMagenta"); // Устанавливаем скин для головы
+                    skull.update();
+                }
             }
         }
     }
 
-    public static ItemStack createHappyNewYearItem() {
-        ItemStack item = new ItemStack(Material.FIREWORK_ROCKET);
-        ItemMeta meta = item.getItemMeta();
+    public static void giveRandomSphere(Player player) {
+        Random random = new Random();
+        String[] spheres = {"EZ Sphere", "Turtle Sphere", "Miner Sphere", "Tank Sphere", "Dumb Sphere", "Tap Tap Monster Sphere"};
+        String randomSphere = spheres[random.nextInt(spheres.length)];
+
+        ItemStack sphere = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) sphere.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GOLD + "Happy New Year Firework");
-            meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK, 1, true);
-            item.setItemMeta(meta);
+            meta.setDisplayName(ChatColor.GOLD + randomSphere);
+            meta.setOwner("PresentMagenta");
+            sphere.setItemMeta(meta);
         }
-        return item;
+
+        player.getInventory().addItem(sphere);
     }
 
     public static void startNewYearEvent(Player player, Snowp plugin) {
-        plugin.getServer().broadcastMessage(ChatColor.GREEN + "Новый год пришел, у вас есть 10 минут!");
-        changeBiomeToTaiga(player);
+        player.getWorld().strikeLightningEffect(player.getLocation());
+        player.getWorld().setTime(0);
+        player.getWorld().setStorm(true);
+        player.getServer().broadcastMessage(ChatColor.GOLD + "Happy New Year! You have 10 minutes to collect special spheres!");
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                // Спавн кейсов в радиусе 500 блоков от игрока
-                for (int i = 0; i < 3; i++) {
-                    spawnRandomCase(player.getWorld());
-                }
+                plugin.getServer().broadcastMessage(ChatColor.RED + "The New Year event is over!");
+                player.getWorld().setStorm(false);
             }
-        }.runTaskLater(JavaPlugin.getPlugin(Snowp.class), 20L * 10 * 60); // 10 минут
+        }.runTaskLater(plugin, 12000L); // 10 минут
+    }
+
+    public static ItemStack createHappyNewYearItem() {
+        ItemStack firework = new ItemStack(Material.FIREWORK_ROCKET);
+        org.bukkit.inventory.meta.ItemMeta meta = firework.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.GOLD + "Happy New Year Firework");
+            firework.setItemMeta(meta);
+        }
+        return firework;
     }
 }
