@@ -1,23 +1,28 @@
+package com.svo.snowp;
+
+import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class Snowp extends JavaPlugin {
+    private static Snowp instance;
     private EventManager eventManager;
     private SphereUtils sphereUtils;
 
     @Override
     public void onEnable() {
+        instance = this;
         eventManager = new EventManager();
         sphereUtils = new SphereUtils();
 
         // Регистрация слушателя
         Bukkit.getPluginManager().registerEvents(new SphereListener(eventManager, sphereUtils), this);
 
-        // Создание и регистрация рецептов, если необходимо
+        // Создание и регистрация рецептов
         NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
         ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
         ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
@@ -30,5 +35,9 @@ public class Snowp extends JavaPlugin {
     @Override
     public void onDisable() {
         // Очистка кода, если необходимо
+    }
+
+    public static Snowp getInstance() {
+        return instance;
     }
 }
