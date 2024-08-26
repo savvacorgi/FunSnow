@@ -6,12 +6,15 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class TelegramNotifier {
+    private final JavaPlugin plugin;
     private final String apiToken;
     private final String chatId;
 
     public TelegramNotifier(JavaPlugin plugin) {
+        this.plugin = plugin;
         FileConfiguration config = plugin.getConfig();
         this.apiToken = config.getString("telegram.api_token");
         this.chatId = config.getString("telegram.chat_id");
@@ -19,14 +22,10 @@ public class TelegramNotifier {
 
     public void sendMessage(String message) {
         try {
-            String urlString = "https://api.telegram.org/bot" + apiToken + "/sendMessage?chat_id=" + chatId + "&text=" + java.net.URLEncoder.encode(message, "UTF-8");
+            String urlString = "https://api.telegram.org/bot" + apiToken + "/sendMessage?chat_id=" + chatId + "&text=" + URLEncoder.encode(message, "UTF-8");
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-
-            try (OutputStream os = connection.getOutputStream(); PrintWriter writer = new PrintWriter(os)) {
-                writer.flush();
-            }
 
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
