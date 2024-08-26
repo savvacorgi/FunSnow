@@ -1,6 +1,5 @@
 package com.svo.snowp.listeners;
 
-import com.svo.snowp.Snowp;
 import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +19,9 @@ public class BlockPlaceListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
 
-        if (SphereUtils.hasCustomTag(item)) {
-            // Действие при размещении кастомного блока
-            plugin.getLogger().info("Custom snow block placed!");
-            // Запуск ивента или другое действие
+        if (SphereUtils.isGiftBox(item, plugin)) {
+            SphereUtils.openGiftBox(event.getPlayer(), item, plugin);
+            event.getBlockPlaced().setType(Material.AIR); // Удаляем блок после открытия
         }
     }
 }
