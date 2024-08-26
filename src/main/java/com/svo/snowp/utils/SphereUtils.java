@@ -1,55 +1,34 @@
 package com.svo.snowp.utils;
 
-import com.svo.snowp.Snowp;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Snow;
+import org.bukkit.block.data.type.SnowBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.World;
+import org.bukkit.block.Biome;
+import java.util.Random;
 
 public class SphereUtils {
 
-    public static ItemStack createHappyNewYearBlock() {
-        ItemStack item = new ItemStack(Material.SNOW_BLOCK);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(ChatColor.GREEN + "Happy New Year Block");
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-
     public static void startNewYearEvent(final JavaPlugin plugin, final World world) {
-        // Сообщение в чат
-        Bukkit.broadcastMessage(ChatColor.GOLD + "Новый год пришел! У вас есть 10 минут!");
+        // Запуск ивента (логика ивента здесь)
+        plugin.getLogger().info("New Year Event Started!");
 
-        // Заменяем биомы на тайгу
-        for (World w : Bukkit.getWorlds()) {
-            changeBiomeToTaiga(w);
-        }
-
-        // Спавн случайных кейсов
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (World w : Bukkit.getWorlds()) {
-                    spawnRandomCase(w);
-                }
-            }
-        }.runTaskTimer(plugin, 0L, 20L * 60L);
-
-        // Завершение ивента через 10 минут
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Bukkit.broadcastMessage(ChatColor.RED + "Ивент Новый год завершен!");
-                // Очищаем снежные блоки и случайные кейсы
-            }
-        }.runTaskLater(plugin, 20L * 60L * 10L);
-    }
-
-    private static void changeBiomeToTaiga(World world) {
+        // Отправка уведомления в Telegram
+        String message = "🎉 Event Started: New Year Celebration\nDescription: The New Year event has started! Enjoy the celebration.";
+        TelegramNotifier telegramNotifier = new TelegramNotifier(plugin);
+        telegramNotifier.sendMessage(message);
+        
+        // Пример установки биома на TAIGA
         int radius = 500;
         int centerX = world.getSpawnLocation().getBlockX();
         int centerZ = world.getSpawnLocation().getBlockZ();
@@ -63,25 +42,29 @@ public class SphereUtils {
         }
     }
 
-    public static void spawnRandomCase(World world) {
-        Random random = new Random();
-        if (random.nextInt(100) < 5) { // 5% шанс спавна
-            int x = random.nextInt(1000) - 500;
-            int z = random.nextInt(1000) - 500;
-            int y = world.getHighestBlockYAt(x, z);
-            Block block = world.getBlockAt(x, y, z);
-
-            if (block.getType() == Material.GRASS_BLOCK || block.getType() == Material.SNOW_BLOCK) {
-                block.setType(Material.PLAYER_HEAD);
-                // Устанавливаем текстуру головы
-                ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-                SkullMeta meta = (SkullMeta) head.getItemMeta();
-                if (meta != null) {
-                    meta.setOwningPlayer(Bukkit.getOfflinePlayer("MHF_Present")); // Используйте нужного игрока или текстуру
-                    head.setItemMeta(meta);
-                }
-                block.getState().update(true);
-            }
+    public static ItemStack createHappyNewYearItem() {
+        ItemStack item = new ItemStack(Material.FIREWORK_ROCKET); // Замените на нужный тип
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("Happy New Year");
+            item.setItemMeta(meta);
         }
+        return item;
+    }
+
+    public static void giveRandomSphere(Player player) {
+        // Пример рандомного выбора сферы и выдачи игроку
+        String[] spheres = {"ez sphere", "turtle sphere", "miner sphere", "tank sphere", "dumb sphere", "tap tap monster sphere"};
+        Random random = new Random();
+        String chosenSphere = spheres[random.nextInt(spheres.length)];
+
+        ItemStack sphere = new ItemStack(Material.DIAMOND); // Замените на нужный тип
+        ItemMeta meta = sphere.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(chosenSphere);
+            sphere.setItemMeta(meta);
+        }
+
+        player.getInventory().addItem(sphere);
     }
 }
