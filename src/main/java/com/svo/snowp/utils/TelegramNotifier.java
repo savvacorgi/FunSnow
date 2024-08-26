@@ -8,11 +8,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class TelegramNotifier {
-
+    private final JavaPlugin plugin; // Добавляем поле для хранения ссылки на плагин
     private final String apiToken;
     private final String chatId;
 
     public TelegramNotifier(JavaPlugin plugin) {
+        this.plugin = plugin; // Инициализируем поле
         this.apiToken = plugin.getConfig().getString("telegram.api-token");
         this.chatId = plugin.getConfig().getString("telegram.chat-id");
     }
