@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SphereListener implements Listener {
-
     private final Snowp plugin;
 
     public SphereListener(Snowp plugin) {
@@ -23,13 +22,7 @@ public class SphereListener implements Listener {
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
         if (itemInHand != null && itemInHand.getType() == Material.PLAYER_HEAD) {
-            String caseId = itemInHand.getItemMeta().getDisplayName();
-
-            if (plugin.isCaseActive(caseId)) {
-                SphereUtils.giveRandomSphere(player);
-                plugin.unregisterCase(caseId);
-                player.getInventory().remove(itemInHand);
-            }
+            SphereUtils.applyCustomEffects(player, itemInHand);
         }
     }
 }
