@@ -19,7 +19,7 @@ public class Snowp extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SphereListener(this), this);
 
         // Создание рецепта
-        createHappyNewYearRecipe();
+        createSnowBlockRecipe();
 
         getLogger().info("Snowp plugin enabled.");
     }
@@ -29,18 +29,18 @@ public class Snowp extends JavaPlugin {
         getLogger().info("Snowp plugin disabled.");
     }
 
-    private void createHappyNewYearRecipe() {
-        // Создаем предмет "Happy New Year"
-        ItemStack happyNewYearItem = SphereUtils.createHappyNewYearItem();
+    private void createSnowBlockRecipe() {
+        // Создаем предмет "Happy New Year Snow Block"
+        ItemStack happyNewYearBlock = SphereUtils.createHappyNewYearBlock();
 
         // Создаем рецепт крафта
-        NamespacedKey key = new NamespacedKey(this, "happy_new_year");
-        ShapedRecipe recipe = new ShapedRecipe(key, happyNewYearItem);
-        recipe.shape("DSD", "SCS", "DSD");
+        NamespacedKey key = new NamespacedKey(this, "happy_new_year_snow_block");
+        ShapedRecipe recipe = new ShapedRecipe(key, happyNewYearBlock);
+        recipe.shape("DND", "NSN", "DND");
 
         recipe.setIngredient('D', Material.DIAMOND);
-        recipe.setIngredient('S', Material.SNOWBALL);
-        recipe.setIngredient('C', Material.NETHERITE_INGOT);
+        recipe.setIngredient('N', Material.NETHERITE_INGOT);
+        recipe.setIngredient('S', Material.SNOW_BLOCK);
 
         // Регистрируем рецепт
         Bukkit.addRecipe(recipe);
