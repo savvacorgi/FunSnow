@@ -3,23 +3,26 @@ package com.svo.snowp;
 import com.svo.snowp.listeners.BlockPlaceListener;
 import com.svo.snowp.listeners.SphereListener;
 import com.svo.snowp.utils.SphereUtils;
-import com.svo.snowp.utils.TelegramNotifier;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Snowp extends JavaPlugin {
 
-    private TelegramNotifier telegramNotifier;
+    private FileConfiguration customConfig;
 
     @Override
     public void onEnable() {
-        saveDefaultConfig(); // Создание файла конфигурации с дефолтными значениями
-
-        telegramNotifier = new TelegramNotifier(this);
+        // Создание и загрузка конфигурации
+        createCustomConfig();
 
         // Регистрация слушателей событий
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(this), this);
@@ -37,8 +40,10 @@ public class Snowp extends JavaPlugin {
     }
 
     private void createHappyNewYearRecipe() {
+        // Создаем предмет "Happy New Year"
         ItemStack happyNewYearItem = SphereUtils.createHappyNewYearItem();
 
+        // Создаем рецепт крафта
         NamespacedKey key = new NamespacedKey(this, "happy_new_year");
         ShapedRecipe recipe = new ShapedRecipe(key, happyNewYearItem);
         recipe.shape("DSD", "SCS", "DSD");
@@ -47,11 +52,21 @@ public class Snowp extends JavaPlugin {
         recipe.setIngredient('S', Material.SNOWBALL);
         recipe.setIngredient('C', Material.NETHERITE_INGOT);
 
+        // Регистрируем рецепт
         Bukkit.addRecipe(recipe);
     }
 
-    public void notifyEventStarted(String eventName, String description) {
-        String message = String.format("🎉 Event Started: %s\nDescription: %s", eventName, description);
-        telegramNotifier.sendMessage(message);
+    private void createCustomConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdirs();
+            saveResource("config.yml", false);
+            getLogger().info("Custom configuration file created at " + configFile.getPath());
+        }
+        customConfig = YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    public FileConfiguration getCustomConfig() {
+        return this.customConfig;
     }
 }
