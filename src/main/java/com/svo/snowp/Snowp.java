@@ -1,7 +1,6 @@
 package com.svo.snowp;
 
 import com.svo.snowp.listeners.SphereListener;
-import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,7 +19,7 @@ public class Snowp extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SphereListener(this), this);
         getLogger().info("Snowp plugin enabled.");
     }
 
