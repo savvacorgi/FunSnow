@@ -114,23 +114,31 @@ public class SphereUtils {
     }
 
     public void spawnGiftBoxes(World world) {
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) { // Количество подарков
-            int x = random.nextInt(100) - 50;
-            int y = 64; // Высота
-            int z = random.nextInt(100) - 50;
-            Location location = new Location(world, x, y, z);
-            if (world.getBlockAt(location).getType() == Material.AIR) {
-                world.getBlockAt(location).setType(Material.PLAYER_HEAD);
-                ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-                SkullMeta meta = (SkullMeta) head.getItemMeta();
-                meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString("some-uuid"))); // Поставьте ваш UUID
-                meta.setDisplayName("Подарок");
-                head.setItemMeta(meta);
-                world.dropItem(location, head);
-            }
+    Random random = new Random();
+    int minY = 55;
+    int maxY = 120;
+    
+    for (int i = 0; i < 10; i++) { // Количество подарков
+        int x = random.nextInt(100) - 50;
+        int z = random.nextInt(100) - 50;
+        int y = random.nextInt(maxY - minY + 1) + minY;
+        
+        Location location = new Location(world, x, y, z);
+        
+        // Проверяем, что место под блоком не пустое
+        Location belowLocation = location.clone().subtract(0, 1, 0);
+        if (world.getBlockAt(belowLocation).getType() != Material.AIR && world.getBlockAt(location).getType() == Material.AIR) {
+            world.getBlockAt(location).setType(Material.PLAYER_HEAD);
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString("some-uuid"))); // Поставьте ваш UUID
+            meta.setDisplayName("Подарок");
+            head.setItemMeta(meta);
+            world.dropItem(location, head);
         }
     }
+}
+
 
     public void removeGiftBoxes(World world) {
         for (int x = -50; x < 50; x++) {
