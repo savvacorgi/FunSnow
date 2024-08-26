@@ -8,26 +8,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-
 public class Snowp extends JavaPlugin {
 
-    private FileConfiguration customConfig;
     private TelegramNotifier telegramNotifier;
+    private FileConfiguration customConfig;
 
     @Override
     public void onEnable() {
-        // Создание и загрузка конфигурации
-        createCustomConfig();
+        saveDefaultConfig();
+        customConfig = getConfig();
 
         // Инициализация TelegramNotifier
-        telegramNotifier = new TelegramNotifier(customConfig.getString("telegram.api-token"), customConfig.getString("telegram.chat-id"));
+        telegramNotifier = new TelegramNotifier(this, customConfig.getString("telegram.api-token"), customConfig.getString("telegram.chat-id"));
 
         // Регистрация слушателей событий
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(this), this);
@@ -61,22 +57,11 @@ public class Snowp extends JavaPlugin {
         Bukkit.addRecipe(recipe);
     }
 
-    private void createCustomConfig() {
-        File configFile = new File(getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
-            saveResource("config.yml", false);
-            getLogger().info("Custom configuration file created at " + configFile.getPath());
-        }
-        customConfig = YamlConfiguration.loadConfiguration(configFile);
+    public void notifyEventStarted(String title, String description) {
+        telegramNotifier.notifyEventStarted(title, description);
     }
 
     public FileConfiguration getCustomConfig() {
-        return this.customConfig;
-    }
-
-    public void notifyEventStarted(String eventName, String eventDescription) {
-        telegramNotifier.sendMessage("Event: " + eventName + "\n" + eventDescription);
-        getLogger().info("Event started: " + eventName + " - " + eventDescription);
+        return customConfig;
     }
 }
