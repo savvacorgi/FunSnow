@@ -3,9 +3,4 @@ main: com.svo.snowp.Snowp
 version: 1.0.2-ALPHA
 api-version: 1.21
 commands:
-  debugsnow:
-    description: "Debug menu"
-    usage: "/debugsnow>"
-    aliases: [testsnow, test]
-    permission: op
-    permission-message: "You do not have permission to use this command"
+  debugsnow: {}
