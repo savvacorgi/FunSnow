@@ -8,11 +8,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Snowp extends JavaPlugin {
 
     @Override
-    public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
+public void onEnable() {
+    Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
+    if (this.getCommand("debugsnow") != null) {
         this.getCommand("debugsnow").setExecutor(new DebugSnowCommand());
-        getLogger().info("Snowp plugin enabled.");
+    } else {
+        getLogger().severe("Command 'debugsnow' not found in plugin.yml!");
     }
+    getLogger().info("Snowp plugin enabled.");
+}
 
     @Override
     public void onDisable() {
