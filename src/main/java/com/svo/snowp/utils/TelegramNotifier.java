@@ -1,34 +1,43 @@
 package com.svo.snowp.utils;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 public class TelegramNotifier {
+
     private final JavaPlugin plugin;
     private final String apiToken;
     private final String chatId;
 
-    public TelegramNotifier(JavaPlugin plugin) {
+    public TelegramNotifier(JavaPlugin plugin, String apiToken, String chatId) {
         this.plugin = plugin;
-        FileConfiguration config = plugin.getConfig();
-        this.apiToken = config.getString("telegram.api_token");
-        this.chatId = config.getString("telegram.chat_id");
+        this.apiToken = apiToken;
+        this.chatId = chatId;
     }
 
-    public void sendMessage(String message) {
+    public void notifyEventStarted(String title, String description) {
+        sendMessageToTelegram(title + ": " + description);
+    }
+
+    private void sendMessageToTelegram(String message) {
         try {
-            String urlString = "https://api.telegram.org/bot" + apiToken + "/sendMessage?chat_id=" + chatId + "&text=" + URLEncoder.encode(message, "UTF-8");
+            String urlString = "https://api.telegram.org/bot" + apiToken + "/sendMessage";
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+
+            String payload = "chat_id=" + chatId + "&text=" + message;
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+            writer.write(payload);
+            writer.flush();
+            writer.close();
 
             int responseCode = connection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
+            if (responseCode != 200) {
                 plugin.getLogger().warning("Failed to send message to Telegram. Response code: " + responseCode);
             }
         } catch (Exception e) {
