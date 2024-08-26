@@ -1,7 +1,6 @@
 package com.svo.snowp.listeners;
 
 import com.svo.snowp.Snowp;
-import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
