@@ -1,64 +1,34 @@
 package com.svo.snowp.utils;
 
+import com.svo.snowp.Snowp;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import java.util.Random;
 
 public class SphereUtils {
 
     public static void startNewYearEvent(final JavaPlugin plugin, final World world) {
-        // Запуск ивента
-        plugin.getLogger().info("New Year Event Started!");
+        // Логика запуска ивента Нового года
+        plugin.getLogger().info("New Year event has started!");
 
-        // Отправка уведомления в Telegram
-        String message = "🎉 Event Started: New Year Celebration\nDescription: The New Year event has started! Enjoy the celebration.";
-        TelegramNotifier telegramNotifier = new TelegramNotifier(plugin);
-        telegramNotifier.sendMessage(message);
+        // Уведомление в телеграм
+        ((Snowp) plugin).notifyEventStarted("New Year Event", "The New Year event has started! Enjoy the celebration.");
 
-        // Установка биома на TAIGA
-        int radius = 500;
-        int centerX = world.getSpawnLocation().getBlockX();
-        int centerZ = world.getSpawnLocation().getBlockZ();
-
-        for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-                int blockX = centerX + x;
-                int blockZ = centerZ + z;
-                world.setBiome(blockX, blockZ, org.bukkit.block.Biome.TAIGA);
+        // Логика завершения ивента через 3 минуты
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                plugin.getLogger().info("New Year event has ended!");
             }
-        }
+        }.runTaskLater(plugin, 3 * 60 * 20L); // 3 минуты = 180 секунд = 180*20 тиков
     }
 
     public static ItemStack createHappyNewYearItem() {
-        ItemStack item = new ItemStack(Material.SNOW_BLOCK); // Используем снежный блок
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName("Happy New Year");
-            item.setItemMeta(meta);
-        }
+        ItemStack item = new ItemStack(Material.SNOW_BLOCK);
+        // Дополнительная настройка предмета (имя, описание, и т.д.)
         return item;
-    }
-
-    public static void giveRandomSphere(Player player) {
-        // Пример рандомного выбора сферы и выдачи игроку
-        String[] spheres = {"ez sphere", "turtle sphere", "miner sphere", "tank sphere", "dumb sphere", "tap tap monster sphere"};
-        Random random = new Random();
-        String chosenSphere = spheres[random.nextInt(spheres.length)];
-
-        ItemStack sphere = new ItemStack(Material.DIAMOND); // Замените на нужный тип
-        ItemMeta meta = sphere.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(chosenSphere);
-            sphere.setItemMeta(meta);
-        }
-
-        player.getInventory().addItem(sphere);
     }
 }
