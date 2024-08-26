@@ -1,8 +1,11 @@
 package com.svo.snowp.listeners;
 
 import com.svo.snowp.Snowp;
+import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -17,20 +20,13 @@ public class BlockPlaceListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        Block block = event.getBlock();
+        Player player = event.getPlayer();
+        Block block = event.getBlockPlaced();
+
         if (block.getType() == Material.SNOW_BLOCK) {
-            // Удаляем снежный блок
-            block.setType(Material.AIR);
-
-            // Запускаем ивент
-            startNewYearEvent();
+            World world = block.getWorld();
+            block.setType(Material.AIR); // Убираем блок после установки
+            SphereUtils.startNewYearEvent(plugin, world);
         }
-    }
-
-    private void startNewYearEvent() {
-        // Запуск ивента
-        plugin.notifyEventStarted("New Year Event", "The New Year event has started! Enjoy the celebration.");
-        
-        // Ваша логика для начала ивента
     }
 }
