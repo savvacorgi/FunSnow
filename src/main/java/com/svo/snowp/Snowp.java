@@ -19,10 +19,8 @@ public class Snowp extends JavaPlugin {
         eventManager = new EventManager();
         sphereUtils = new SphereUtils();
 
-        // Регистрация слушателя
         Bukkit.getPluginManager().registerEvents(new SphereListener(eventManager, sphereUtils), this);
 
-        // Создание и регистрация рецептов
         NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
         ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
         ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
@@ -34,7 +32,7 @@ public class Snowp extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Очистка кода, если необходимо
+        // Очистка ресурсов, если необходимо
     }
 
     public static Snowp getInstance() {
