@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collections;
 import java.util.Random;
 
 public class SphereUtils {
@@ -115,13 +114,12 @@ public class SphereUtils {
                 block.setType(Material.PLAYER_HEAD);
                 SkullMeta meta = (SkullMeta) block.getState().getData();
                 meta.setDisplayName(ChatColor.GREEN + "Present");
-                meta.setOwner("MHF_Present"); // Здесь можно указать URL или owner для создания кастомного скина
+                meta.setOwningPlayer(Bukkit.getOfflinePlayer("MHF_Present")); // Установить скин с именем
                 block.getState().setData(meta);
             }
         }
     }
 
-    // Создание предмета для события
     public static ItemStack createHappyNewYearItem() {
         ItemStack item = new ItemStack(Material.FIREWORK_ROCKET);
         ItemMeta meta = item.getItemMeta();
@@ -133,7 +131,6 @@ public class SphereUtils {
         return item;
     }
 
-    // Запуск события нового года
     public static void startNewYearEvent(Player player, Snowp plugin) {
         plugin.getServer().broadcastMessage(ChatColor.GREEN + "Новый год пришел, у вас есть 10 минут!");
         changeBiomeToTaiga(player);
