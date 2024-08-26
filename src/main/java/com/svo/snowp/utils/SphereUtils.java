@@ -4,15 +4,15 @@ import com.svo.snowp.Snowp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
+import java.util.Random;
 
 public class SphereUtils {
 
@@ -85,29 +85,32 @@ public class SphereUtils {
         }
     }
 
-    public static void openDebugSnowGUI(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.BLUE + "Debug Snow GUI");
+    public static void changeBiomeToTaiga(Player player) {
+        World world = player.getWorld();
+        int radius = 500;
+        int centerX = player.getLocation().getBlockX();
+        int centerZ = player.getLocation().getBlockZ();
 
-        inventory.addItem(createSphereItem("EZ Sphere", ChatColor.AQUA + "+5 Урон, +10 Скорость"));
-        inventory.addItem(createSphereItem("Turtle Sphere", ChatColor.DARK_GREEN + "-25% Скорость, +4 Урон"));
-        inventory.addItem(createSphereItem("Miner Sphere", ChatColor.GRAY + "Спешка 2, Огнестойкость"));
-        inventory.addItem(createSphereItem("Tank Sphere", ChatColor.GOLD + "+4 Броня, +4 HP"));
-        inventory.addItem(createSphereItem("Dumb Sphere", ChatColor.RED + "+6 Урон, -3 Броня"));
-        inventory.addItem(createSphereItem("Tap Tap Monster Sphere", ChatColor.YELLOW + "+15 Скорость Атаки"));
-
-        player.openInventory(inventory);
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                int blockX = centerX + x;
+                int blockZ = centerZ + z;
+                world.setBiome(blockX, blockZ, org.bukkit.block.Biome.TAIGA);
+            }
+        }
     }
 
-    private static ItemStack createSphereItem(String name, String lore) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + name);
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + lore));
+    public static void spawnRandomCase(World world) {
+        Random random = new Random();
+        if (random.nextInt(100) < 1) { // 1% шанс спавна
+            int x = random.nextInt(1000) - 500;
+            int z = random.nextInt(1000) - 500;
+            int y = world.getHighestBlockYAt(x, z);
+            Block block = world.getBlockAt(x, y, z);
 
-        // Устанавливаем владельца головы
-        meta.setOwner("savvacorgi");
-
-        item.setItemMeta(meta);
-        return item;
+            if (block.getType() == Material.GRASS_BLOCK || block.getType() == Material.SNOW_BLOCK) {
+                block.setType(Material.PLAYER_HEAD);
+            }
+        }
     }
 }
