@@ -2,33 +2,27 @@ package com.svo.snowp.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Snow;
-import org.bukkit.block.data.type.SnowBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
 import java.util.Random;
 
 public class SphereUtils {
 
     public static void startNewYearEvent(final JavaPlugin plugin, final World world) {
-        // Запуск ивента (логика ивента здесь)
+        // Запуск ивента
         plugin.getLogger().info("New Year Event Started!");
 
         // Отправка уведомления в Telegram
         String message = "🎉 Event Started: New Year Celebration\nDescription: The New Year event has started! Enjoy the celebration.";
         TelegramNotifier telegramNotifier = new TelegramNotifier(plugin);
         telegramNotifier.sendMessage(message);
-        
-        // Пример установки биома на TAIGA
+
+        // Установка биома на TAIGA
         int radius = 500;
         int centerX = world.getSpawnLocation().getBlockX();
         int centerZ = world.getSpawnLocation().getBlockZ();
@@ -37,13 +31,13 @@ public class SphereUtils {
             for (int z = -radius; z <= radius; z++) {
                 int blockX = centerX + x;
                 int blockZ = centerZ + z;
-                world.setBiome(blockX, blockZ, Biome.TAIGA);
+                world.setBiome(blockX, blockZ, org.bukkit.block.Biome.TAIGA);
             }
         }
     }
 
     public static ItemStack createHappyNewYearItem() {
-        ItemStack item = new ItemStack(Material.FIREWORK_ROCKET); // Замените на нужный тип
+        ItemStack item = new ItemStack(Material.SNOW_BLOCK); // Используем снежный блок
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName("Happy New Year");
