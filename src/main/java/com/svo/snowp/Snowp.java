@@ -24,7 +24,7 @@ public class Snowp extends JavaPlugin {
 
         // Создание рецепта для кастомного снежного блока
         NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
-        ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
+        ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0.0, 0.0, 0.0, ""));
         ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
         recipe.shape("XXX", "XYX", "XXX");
         recipe.setIngredient('X', Material.SNOW_BLOCK);
