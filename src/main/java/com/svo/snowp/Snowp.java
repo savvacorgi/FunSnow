@@ -1,5 +1,6 @@
 package com.svo.snowp;
 
+import com.svo.snowp.utils.Sphere;
 import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,6 +22,7 @@ public class Snowp extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new SphereListener(eventManager, sphereUtils), this);
 
+        // Создание рецепта для кастомного снежного блока
         NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
         ItemStack customSnowBlock = sphereUtils.createSphereItem(new Sphere("Custom Snow Block", "Custom Snow Block Head", "100683", 0, 0, 0, ""));
         ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
