@@ -1,32 +1,26 @@
 package com.svo.snowp;
 
-import com.svo.snowp.listeners.BlockPlaceListener;
 import com.svo.snowp.listeners.SphereListener;
 import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Snowp extends JavaPlugin implements Listener {
+public class Snowp extends JavaPlugin {
 
-    private final Set<String> activeCases = new HashSet<>();
-    private boolean newYearEventActive = false;
+    private Map<Location, Biome> originalBiomes = new HashMap<>();
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new SphereListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(this), this);
-        Bukkit.getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginManager().registerEvents(new SphereListener(), this);
         getLogger().info("Snowp plugin enabled.");
     }
 
@@ -35,57 +29,40 @@ public class Snowp extends JavaPlugin implements Listener {
         getLogger().info("Snowp plugin disabled.");
     }
 
-    @EventHandler
-    public void onCraft(CraftItemEvent event) {
-        if (isNewYearCraft(event)) {
-            event.getInventory().setResult(createEnchantedDiamondBlock());
-        }
-    }
+    public void startEvent(Player player) {
+        Location playerLocation = player.getLocation();
+        int radius = 500;
 
-    private boolean isNewYearCraft(CraftItemEvent event) {
-        return event.getRecipe().getResult().getType() == Material.DIAMOND_BLOCK &&
-                event.getInventory().contains(Material.SNOW_BLOCK, 8);
-    }
-
-    private ItemStack createEnchantedDiamondBlock() {
-        ItemStack enchantedBlock = new ItemStack(Material.DIAMOND_BLOCK);
-        ItemMeta meta = enchantedBlock.getItemMeta();
-        meta.addEnchant(Enchantment.LUCK, 1, true);
-        meta.setDisplayName("New Year Block");
-        enchantedBlock.setItemMeta(meta);
-        return enchantedBlock;
-    }
-
-    public void startNewYearEvent() {
-        if (newYearEventActive) return;
-
-        newYearEventActive = true;
-        Bukkit.broadcastMessage("Новый год пришел, у вас есть 10 минут!");
-
-        // Schedule the end of the event after 10 minutes (12000 ticks)
+        // Сохраняем оригинальные биомы и устанавливаем тайгу
         new BukkitRunnable() {
             @Override
             public void run() {
-                endNewYearEvent();
+                for (int x = -radius; x <= radius; x++) {
+                    for (int z = -radius; z <= radius; z++) {
+                        Location location = playerLocation.clone().add(x, 0, z);
+                        Biome originalBiome = location.getBlock().getBiome();
+                        originalBiomes.put(location, originalBiome);
+                        location.getBlock().setBiome(Biome.TAIGA);
+                    }
+                }
             }
-        }.runTaskLater(this, 12000L);
-    }
+        }.runTask(this);
 
-    public void endNewYearEvent() {
-        Bukkit.broadcastMessage("Новогодний ивент закончился!");
-        SphereUtils.removeAllCases();
-        newYearEventActive = false;
-    }
+        // Сообщение в чат
+        Bukkit.broadcastMessage(ChatColor.GREEN + "Новый год пришел, у вас есть 10 минут!");
 
-    public void registerCase(String caseId) {
-        activeCases.add(caseId);
-    }
+        // Запуск таймера на 10 минут
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Возвращаем оригинальные биомы
+                for (Map.Entry<Location, Biome> entry : originalBiomes.entrySet()) {
+                    entry.getKey().getBlock().setBiome(entry.getValue());
+                }
 
-    public boolean isCaseActive(String caseId) {
-        return activeCases.contains(caseId);
-    }
-
-    public void unregisterCase(String caseId) {
-        activeCases.remove(caseId);
+                // Сообщение о завершении ивента
+                Bukkit.broadcastMessage(ChatColor.RED + "Новогодний ивент завершен!");
+            }
+        }.runTaskLater(this, 20L * 60 * 10); // 10 минут (600 секунд)
     }
 }
