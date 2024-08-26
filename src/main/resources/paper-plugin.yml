@@ -5,5 +5,4 @@ api-version: '1.21'
 commands:
   debugsnow:
     description: Opens the debug snow GUI
-    usage: /debugsnow
     permission: op
