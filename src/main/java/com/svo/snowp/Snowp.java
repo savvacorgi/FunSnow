@@ -1,13 +1,11 @@
 package com.svo.snowp;
 
 import com.svo.snowp.listeners.BlockPlaceListener;
-import com.svo.snowp.listeners.SphereListener;
 import com.svo.snowp.utils.SphereUtils;
 import com.svo.snowp.utils.TelegramNotifier;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,53 +13,44 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Snowp extends JavaPlugin {
 
     private TelegramNotifier telegramNotifier;
-    private FileConfiguration customConfig;
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        customConfig = getConfig();
-
-        // Инициализация TelegramNotifier
-        telegramNotifier = new TelegramNotifier(this, customConfig.getString("telegram.api-token"), customConfig.getString("telegram.chat-id"));
-
         // Регистрация слушателей событий
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new SphereListener(this), this);
 
         // Создание рецепта
-        createHappyNewYearRecipe();
+        createCustomSnowBlockRecipe();
+
+        // Инициализация и использование TelegramNotifier
+        this.saveDefaultConfig(); // Убедитесь, что конфиг файл создан
+        telegramNotifier = new TelegramNotifier(this);
+        telegramNotifier.sendNotification("Server is now online!");
 
         getLogger().info("Snowp plugin enabled.");
     }
 
     @Override
     public void onDisable() {
+        if (telegramNotifier != null) {
+            telegramNotifier.sendNotification("Server is shutting down.");
+        }
         getLogger().info("Snowp plugin disabled.");
     }
 
-    private void createHappyNewYearRecipe() {
-        // Создаем предмет "Happy New Year"
-        ItemStack happyNewYearItem = SphereUtils.createHappyNewYearItem();
+    private void createCustomSnowBlockRecipe() {
+        // Создаем кастомный предмет
+        ItemStack customSnowBlock = SphereUtils.createCustomSnowBlock();
 
         // Создаем рецепт крафта
-        NamespacedKey key = new NamespacedKey(this, "happy_new_year");
-        ShapedRecipe recipe = new ShapedRecipe(key, happyNewYearItem);
-        recipe.shape("DSD", "SCS", "DSD");
+        NamespacedKey key = new NamespacedKey(this, "custom_snow_block");
+        ShapedRecipe recipe = new ShapedRecipe(key, customSnowBlock);
+        recipe.shape("SSS", "SCS", "SSS");
 
-        recipe.setIngredient('D', Material.DIAMOND);
         recipe.setIngredient('S', Material.SNOWBALL);
-        recipe.setIngredient('C', Material.NETHERITE_INGOT);
+        recipe.setIngredient('C', Material.DIAMOND);
 
         // Регистрируем рецепт
         Bukkit.addRecipe(recipe);
-    }
-
-    public void notifyEventStarted(String title, String description) {
-        telegramNotifier.notifyEventStarted(title, description);
-    }
-
-    public FileConfiguration getCustomConfig() {
-        return customConfig;
     }
 }
