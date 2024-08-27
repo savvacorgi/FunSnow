@@ -1,11 +1,16 @@
 package com.svo.snowp.listeners;
 
 import com.svo.snowp.EventManager;
-import com.svo.snowp.utils.Sphere;
 import com.svo.snowp.utils.SphereUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,23 +23,36 @@ public class SphereListener implements Listener {
         this.sphereUtils = sphereUtils;
     }
 
+    // Спавн подарков (голов)
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItemInHand();
+
+        if (item.getType() == Material.PLAYER_HEAD) {
+            Block block = event.getBlock();
+            BlockState state = block.getState();
+
+            if (state instanceof Skull) {
+                Skull skull = (Skull) state;
+                // Дополнительная логика для спавна подарков
+                Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("FunSnow"), () -> {
+                    sphereUtils.openGiftBox(player, item, Bukkit.getPluginManager().getPlugin("FunSnow"));
+                }, 20L); // 20L = 1 секунда задержки
+            }
+        }
+    }
+
+    // Открытие подарков
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = event.getItem();
+        Block block = event.getClickedBlock();
 
-        if (item != null && item.getType() == org.bukkit.Material.PLAYER_HEAD) {
-            // Проверяем, является ли предмет Sphere
-            Sphere sphere = sphereUtils.getSphereFromItem(item);
-            if (sphere != null) {
-                // Реализуйте логику взаимодействия с Sphere
-                if (eventManager.canStartEvent(player)) {
-                    eventManager.startEvent(player);
-                    player.sendMessage("Event started!");
-                } else {
-                    player.sendMessage("You must wait before starting another event.");
-                }
-            }
+        if (block != null && block.getType() == Material.PLAYER_HEAD) {
+            Skull skull = (Skull) block.getState();
+            // Логика открытия подарка
+            sphereUtils.openGiftBox(player, new ItemStack(Material.PLAYER_HEAD), Bukkit.getPluginManager().getPlugin("FunSnow"));
         }
     }
 }
