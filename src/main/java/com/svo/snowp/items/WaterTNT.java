@@ -1,59 +1,93 @@
 package com.svo.snowp.items;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Collections;
+import java.util.List;
 
 public class WaterTNT implements Listener {
 
-    private final Plugin plugin;
+    private final JavaPlugin plugin;
 
-    public WaterTNT(Plugin plugin) {
+    public WaterTNT(JavaPlugin plugin) {
         this.plugin = plugin;
-        initRecipe();
     }
 
-    private void initRecipe() {
-        ItemStack item = new ItemStack(Material.TNT);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§bВодяная TNT");
-        meta.setLore(Collections.singletonList("§4Этот TNT наносит урон, но не разрушает блоки"));
-        item.setItemMeta(meta);
+    public void registerEvents() {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
-        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "water_tnt"), item);
-        recipe.shape("SSS", "STC", "SSS");
-        recipe.setIngredient('S', Material.SAND);
+    public ItemStack createWaterTNT() {
+        ItemStack tnt = new ItemStack(Material.TNT);
+        ItemMeta meta = tnt.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§bWater TNT");
+            meta.setLore(List.of("§4Этот TNT наносит урон, но не разрушает блоки"));
+            tnt.setItemMeta(meta);
+        }
+        return tnt;
+    }
+
+    public void addRecipe() {
+        ItemStack waterTNT = createWaterTNT();
+        ShapedRecipe recipe = new ShapedRecipe(waterTNT);
+
+        // Определяем рецепт: 2 песка и 2 TNT
+        recipe.shape("TT ", "T S", "T S");
         recipe.setIngredient('T', Material.TNT);
-        recipe.setIngredient('C', Material.WATER_BUCKET);
+        recipe.setIngredient('S', Material.SAND);
 
-        plugin.getServer().addRecipe(recipe);
+        Bukkit.addRecipe(recipe);
     }
 
     @EventHandler
-    public void onPlayerUseTNT(PlayerInteractEvent event) {
-        if (event.getItem() == null || event.getItem().getType() != Material.TNT) {
-            return;
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getItem() != null && event.getItem().isSimilar(createWaterTNT())) {
+            ItemStack item = event.getItem();
+            if (item != null && item.getAmount() > 0) {
+                // Устанавливаем TNT на месте клика
+                TNTPrimed tnt = (TNTPrimed) event.getClickedBlock().getWorld().spawnEntity(event.getClickedBlock().getLocation().add(0.5, 0.5, 0.5), EntityType.PRIMED_TNT);
+                
+                // Настраиваем TNT
+                tnt.setIsIncendiary(false);
+                tnt.setYield(0);
+                
+                // Устанавливаем обработчик события активации TNT
+                tnt.setFuseTicks(80); // Устанавливаем задержку перед взрывом (в тиках)
+
+                // Уменьшаем количество использованных предметов
+                item.setAmount(item.getAmount() - 1);
+                player.sendMessage("§aTNT установлено. Используйте зажигалку, чтобы активировать его.");
+            }
         }
+    }
 
-        ItemStack item = event.getItem();
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§bВодяная TNT")) {
-            event.setCancelled(true); // Предотвращаем стандартное поведение
-
-            // Спавним TNT, которое взрывается мгновенно и не разрушает блоки
-            TNTPrimed tnt = (TNTPrimed) event.getPlayer().getWorld().spawn(event.getPlayer().getLocation(), TNTPrimed.class);
-            tnt.setFuseTicks(0); // Мгновенный взрыв
-            tnt.setYield(4F); // Мощность взрыва
-            tnt.setIsIncendiary(false); // Без разрушения блоков
+    @EventHandler
+    public void onTNTExplosion(org.bukkit.event.entity.EntityExplodeEvent event) {
+        if (event.getEntityType() == EntityType.PRIMED_TNT) {
+            TNTPrimed tnt = (TNTPrimed) event.getEntity();
+            // Наносим урон всем игрокам в радиусе взрыва
+            tnt.getWorld().getNearbyEntities(tnt.getLocation(), 5, 5, 5).forEach(entity -> {
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
+                    player.damage(10); // Наносим 10 единиц урона
+                }
+            });
+            
+            // Останавливаем разрушение блоков
+            event.blockList().clear();
         }
     }
 }
