@@ -22,18 +22,16 @@ public class EventManager {
             @Override
             public void run() {
                 Bukkit.broadcastMessage("Ивент завершился!");
+                scheduleNextEvent();  // Планируем запуск следующего ивента после кулдауна
             }
         }.runTaskLater(plugin, EVENT_DURATION);
-
-        // Планируем следующий запуск ивента
-        scheduleNextEvent();
     }
 
     private void scheduleNextEvent() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                startEvent();
+                startEvent();  // Запускаем следующий ивент после кулдауна
             }
         }.runTaskLater(plugin, EVENT_COOLDOWN);
     }
