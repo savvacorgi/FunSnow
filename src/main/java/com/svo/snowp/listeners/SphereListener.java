@@ -1,6 +1,5 @@
 package com.svo.snowp.listeners;
 
-import com.svo.snowp.EventManager;
 import com.svo.snowp.utils.Sphere;
 import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Material;
@@ -12,11 +11,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class SphereListener implements Listener {
 
-    private final EventManager eventManager;
     private final SphereUtils sphereUtils;
 
-    public SphereListener(EventManager eventManager, SphereUtils sphereUtils) {
-        this.eventManager = eventManager;
+    public SphereListener(SphereUtils sphereUtils) {
         this.sphereUtils = sphereUtils;
     }
 
@@ -32,19 +29,15 @@ public class SphereListener implements Listener {
                 // Проверка имени и применение эффекта
                 if (displayName.equals(sphere.getDisplayName())) {
                     // Применение эффектов сферы
-                    // Пример: увеличение урона
                     if (sphere.getAttackBoost() > 0) {
                         // Ваш код для увеличения урона
                     }
-                    // Пример: уменьшение HP
                     if (sphere.getHealthReduction() < 0) {
                         // Ваш код для уменьшения здоровья
                     }
-                    // Пример: увеличение скорости передвижения
                     if (sphere.getMovementSpeedBoost() > 0) {
                         // Ваш код для увеличения скорости
                     }
-                    // Пример: увеличение защиты
                     if (sphere.getDefenseBoost() > 0) {
                         // Ваш код для увеличения защиты
                     }
