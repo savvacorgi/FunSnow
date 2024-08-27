@@ -2,7 +2,6 @@ package com.svo.snowp.items;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -12,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collections;
 
@@ -30,7 +28,6 @@ public class WaterTNT implements Listener {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§bВодяная TNT");
         meta.setLore(Collections.singletonList("§4Этот TNT наносит урон, но не разрушает блоки"));
-        meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
         item.setItemMeta(meta);
 
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "water_tnt"), item);
