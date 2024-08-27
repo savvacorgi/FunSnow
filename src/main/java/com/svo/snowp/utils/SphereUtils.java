@@ -28,8 +28,15 @@ public class SphereUtils {
         spheres.add(new Sphere("Sphere Mage", "Mage Head", "100683", 0.0, 0.0, 1.0, "Increased magical abilities"));
         spheres.add(new Sphere("Sphere Knight", "Knight Head", "100683", 0.0, 0.0, 1.0, "Balanced combat skills"));
         
-        // Новая сфера с указанными эффектами
-        spheres.add(new Sphere("Sphere of Agility", "Agility Head", "100684", 4.0, -3.0, 2.0, "Increase damage by 4, decrease HP by 3, increase movement speed by 10, increase defense by 2"));
+        // Новые сферы с указанными эффектами
+        spheres.add(new Sphere("Sphere of Agility", "Agility Head", "100684", 4.0, -3.0, 10.0, 2.0, "Increase damage by 4, decrease HP by 3, increase movement speed by 10, increase defense by 2"));
+        spheres.add(new Sphere("Sphere of Strength", "Strength Head", "100685", 6.0, -2.0, 0.0, 1.0, "Increase damage by 6, decrease HP by 2, increase defense by 1"));
+        spheres.add(new Sphere("Sphere of Swiftness", "Swiftness Head", "100686", 0.0, 0.0, 20.0, 0.0, "Increase movement speed by 20"));
+        spheres.add(new Sphere("Sphere of Protection", "Protection Head", "100687", 0.0, 0.0, 0.0, 5.0, "Increase defense by 5"));
+        spheres.add(new Sphere("Sphere of Vitality", "Vitality Head", "100688", 0.0, -5.0, 0.0, 3.0, "Decrease HP by 5, increase defense by 3"));
+        spheres.add(new Sphere("Sphere of Precision", "Precision Head", "100689", 3.0, -1.0, 5.0, 1.0, "Increase damage by 3, decrease HP by 1, increase movement speed by 5, increase defense by 1"));
+        spheres.add(new Sphere("Sphere of Fortitude", "Fortitude Head", "100690", 2.0, -4.0, 0.0, 4.0, "Increase damage by 2, decrease HP by 4, increase defense by 4"));
+        spheres.add(new Sphere("Sphere of Agility Plus", "Agility Plus Head", "100691", 5.0, -2.0, 15.0, 3.0, "Increase damage by 5, decrease HP by 2, increase movement speed by 15, increase defense by 3"));
     }
 
     // Метод для создания предмета сферы
