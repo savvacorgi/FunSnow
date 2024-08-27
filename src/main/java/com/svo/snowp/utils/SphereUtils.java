@@ -13,16 +13,16 @@ public class SphereUtils {
 
     public SphereUtils() {
         // Инициализация списка сфер
-        spheres.add(new Sphere("Sphere Miner", "Miner Head", "100683", 0.0, 0.0, 1.0, "Increased mining speed"));
-        spheres.add(new Sphere("Sphere Diver", "Diver Head", "100683", 0.0, 0.0, 1.0, "Increased underwater speed"));
-        spheres.add(new Sphere("Sphere Builder", "Builder Head", "100683", 0.0, 0.0, 1.0, "Increased building speed"));
-        spheres.add(new Sphere("Sphere Explorer", "Explorer Head", "100683", 0.0, 0.0, 1.0, "Increased exploration speed"));
-        spheres.add(new Sphere("Sphere Warrior", "Warrior Head", "100683", 1.0, 0.0, 1.0, "Increased combat ability"));
-        spheres.add(new Sphere("Sphere Archer", "Archer Head", "100683", 0.0, 0.0, 1.0, "Increased archery skills"));
-        spheres.add(new Sphere("Sphere Mage", "Mage Head", "100683", 0.0, 0.0, 1.0, "Increased magical abilities"));
-        spheres.add(new Sphere("Sphere Knight", "Knight Head", "100683", 0.0, 0.0, 1.0, "Balanced combat skills"));
-        spheres.add(new Sphere("Sphere of Agility", "Agility Head", "100684", 4.0, -3.0, 2.0, "Increase damage by 4, decrease HP by 3, increase movement speed by 10, increase defense by 2"));
-        // Добавьте больше сфер по необходимости
+spheres.add(new Sphere("Sphere Miner", "Miner Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Diver", "Diver Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Builder", "Builder Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Explorer", "Explorer Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Warrior", "Warrior Head", 1.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Archer", "Archer Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Mage", "Mage Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere Knight", "Knight Head", 0.0, 0.0, 1.0, 0.0));
+spheres.add(new Sphere("Sphere of Agility", "Agility Head", 4.0, -3.0, 2.0, 0.0));
+        
     }
 
     // Метод для создания предмета сферы
