@@ -1,55 +1,52 @@
-package com.svo.snowp.utils;
+package com.svo.snowp.listeners;
 
-public class Sphere {
-    private final String name;
-    private final String displayName;
-    private final String textureId;
-    private final double attackBoost;
-    private final double healthReduction;
-    private final double movementSpeedBoost;
-    private final double defenseBoost;
-    private final String description;
+import com.svo.snowp.utils.Sphere;
+import com.svo.snowp.utils.SphereUtils;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-    public Sphere(String name, String displayName, String textureId, double attackBoost, double healthReduction, double movementSpeedBoost, double defenseBoost, String description) {
-        this.name = name;
-        this.displayName = displayName;
-        this.textureId = textureId;
-        this.attackBoost = attackBoost;
-        this.healthReduction = healthReduction;
-        this.movementSpeedBoost = movementSpeedBoost;
-        this.defenseBoost = defenseBoost;
-        this.description = description;
+public class SphereListener implements Listener {
+
+    private final SphereUtils sphereUtils;
+
+    public SphereListener(SphereUtils sphereUtils) {
+        this.sphereUtils = sphereUtils;
     }
 
-    public String getName() {
-        return name;
-    }
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getItem() != null && event.getItem().getType() == Material.PLAYER_HEAD) {
+            ItemStack item = event.getItem();
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null && meta.hasDisplayName()) {
+                String displayName = meta.getDisplayName();
+                Sphere sphere = sphereUtils.getRandomSphere(); // Получение сферы для обработки эффекта
 
-    public String getDisplayName() {
-        return displayName;
-    }
+                // Проверка имени и применение эффекта
+                if (displayName.equals(sphere.getDisplayName())) {
+                    // Применение эффектов сферы
+                    if (sphere.getAttackBoost() > 0) {
+                        // Ваш код для увеличения урона
+                    }
+                    if (sphere.getHealthReduction() < 0) {
+                        // Ваш код для уменьшения здоровья
+                    }
+                    if (sphere.getMovementSpeedBoost() > 0) {
+                        // Ваш код для увеличения скорости
+                    }
+                    if (sphere.getDefenseBoost() > 0) {
+                        // Ваш код для увеличения защиты
+                    }
 
-    public String getTextureId() {
-        return textureId;
-    }
-
-    public double getAttackBoost() {
-        return attackBoost;
-    }
-
-    public double getHealthReduction() {
-        return healthReduction;
-    }
-
-    public double getMovementSpeedBoost() {
-        return movementSpeedBoost;
-    }
-
-    public double getDefenseBoost() {
-        return defenseBoost;
-    }
-
-    public String getDescription() {
-        return description;
+                    // Удаление сферы из инвентаря
+                    event.getPlayer().getInventory().removeItem(item);
+                    event.getPlayer().sendMessage("Эффект сферы " + displayName + " активирован!");
+                }
+            }
+        }
     }
 }
