@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,22 +21,22 @@ public class EventManager {
     private boolean eventActive = false;
     private final long eventInterval = 20 * 60 * 5; // 5 минут в тиках
     private final long eventDuration = 20 * 60 * 5; // 5 минут ивента
+    private final SphereUtils sphereUtils;
 
-    public EventManager(JavaPlugin plugin) {
+    public EventManager(JavaPlugin plugin, SphereUtils sphereUtils) {
         this.plugin = plugin;
+        this.sphereUtils = sphereUtils;
         startEventCycle();
     }
 
     private void startEventCycle() {
-        Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (eventActive) {
-                    endEvent();
-                }
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (eventActive) {
+                endEvent();
+            } else {
                 startEvent();
             }
-        }, 0L, eventInterval); // Запуск через интервал в 5 минут
+        }, 0L, eventInterval); // Запуск ивента каждые 5 минут
     }
 
     public void startEvent() {
@@ -55,9 +56,9 @@ public class EventManager {
         giftLocations.clear();
 
         for (int i = 0; i < 6; i++) { // 6 подарков
-            int x = random.nextInt(9901) - 10000; // Координаты от -10000 до 10000
-            int z = random.nextInt(9901) - 10000; // Координаты от -10000 до 10000
-            int y = world.getHighestBlockYAt(x, z); // Высота
+            int x = random.nextInt(20001) - 10000; // Координаты от -10000 до 10000
+            int z = random.nextInt(20001) - 10000; // Координаты от -10000 до 10000
+            int y = world.getHighestBlockYAt(x, z) + 1; // Высота на поверхности + 1 для размещения
 
             Location location = new Location(world, x, y, z);
 
@@ -65,15 +66,19 @@ public class EventManager {
             block.setType(Material.PLAYER_HEAD);
 
             ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-            item.getItemMeta().setDisplayName("Подарок");
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("Подарок");
+            meta.setLore(List.of("Координаты: X:" + x + " Y:" + y + " Z:" + z));
+            item.setItemMeta(meta);
+
+            block.setType(Material.PLAYER_HEAD);
+            block.getState().update(); // Обновляем состояние блока
 
             giftLocations.add(location);
         }
 
         // Удаление подарков по истечении времени
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            endEvent();
-        }, eventDuration); // 5 минут
+        Bukkit.getScheduler().runTaskLater(plugin, this::endEvent, eventDuration); // 5 минут
     }
 
     private void endEvent() {
@@ -90,4 +95,8 @@ public class EventManager {
     public boolean isEventActive() {
         return eventActive;
     }
-}
+
+    public SphereUtils getSphereUtils() {
+        return sphereUtils;
+    }
+    }
