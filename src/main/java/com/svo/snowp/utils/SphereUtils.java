@@ -47,8 +47,4 @@ public class SphereUtils {
         player.sendMessage("Вы открыли подарок и получили: " + randomSphere.getDisplayName());
     }
 
-    // Получение случайной сферы
-    public Sphere getRandomSphere() {
-        return spheres.get(new Random().nextInt(spheres.size()));
-    }
-}
+    // 
