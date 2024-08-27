@@ -1,15 +1,14 @@
 package com.svo.snowp;
 
+import com.svo.snowp.utils.SphereUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,77 +16,70 @@ import java.util.Random;
 
 public class EventManager {
 
-    private final Snowp plugin;
-    private boolean eventActive = false;
+    private final JavaPlugin plugin;
     private final SphereUtils sphereUtils;
-    private final List<Location> spawnedGiftLocations = new ArrayList<>();
+    private final List<Location> giftLocations = new ArrayList<>();
+    private boolean eventActive = false;
 
-    public EventManager(Snowp plugin) {
+    public EventManager(JavaPlugin plugin, SphereUtils sphereUtils) {
         this.plugin = plugin;
-        this.sphereUtils = plugin.getSphereUtils();
+        this.sphereUtils = sphereUtils;
     }
 
     public void startEvent() {
         if (eventActive) {
+            plugin.getServer().broadcastMessage("Ивент уже активен!");
             return;
         }
-        eventActive = true;
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            // Запуск ивента и спавн голов
-            spawnGiftHeads();
-            
-            // Планирование окончания ивента через 5 минут
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    endEvent();
-                }
-            }.runTaskLater(plugin, 6000L); // 6000 тиков = 5 минут
-        });
+        eventActive = true;
+        plugin.getServer().broadcastMessage("Ивент начался! Найдите подарки!");
+
+        World world = Bukkit.getWorlds().get(0); // Основной мир
+        spawnGiftsInWorld(world);
+        announceGiftLocations();
     }
 
-    private void spawnGiftHeads() {
-        World world = Bukkit.getWorlds().get(0); // Получаем первый мир
+    private void spawnGiftsInWorld(World world) {
         Random random = new Random();
+        giftLocations.clear();
 
-        while (spawnedGiftLocations.size() < 6) { // Спавн 6 голов
-            int x = random.nextInt(9900) + 100; // Случайные координаты от 100 до 10000
-            int z = random.nextInt(9900) + 100;
-            int y = world.getHighestBlockYAt(x, z) + 1; // Поставить голову прямо над поверхностью
+        for (int i = 0; i < 6; i++) { // 6 подарков
+            int x = random.nextInt(9901) - 10000; // Координаты от -10000 до 10000
+            int z = random.nextInt(9901) - 10000; // Координаты от -10000 до 10000
+            int y = world.getHighestBlockYAt(x, z); // Высота
 
             Location location = new Location(world, x, y, z);
-            Block block = location.getBlock();
 
-            if (block.getType() == Material.AIR) {
-                block.setType(Material.PLAYER_HEAD);
-                org.bukkit.inventory.meta.PlayerHeadMeta meta = (org.bukkit.inventory.meta.PlayerHeadMeta) block.getState().getData();
-                meta.setCustomModelData(97519); // ID текстуры головы
-                block.getState().update();
+            Block block = world.getBlockAt(location);
+            block.setType(Material.PLAYER_HEAD);
 
-                // Добавляем локацию в список и инфо в чат
-                spawnedGiftLocations.add(location);
-                Bukkit.getLogger().info("Подарок заспавнен в (" + x + ", " + z + ") на высоте " + y);
-                Bukkit.broadcastMessage("Новый подарок заспавнен в локации (" + x + ", " + z + ")!");
+            ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+            item.getItemMeta().setDisplayName("Подарок");
+
+            giftLocations.add(location);
+        }
+
+        // Удаление подарков по истечении времени
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Location loc : giftLocations) {
+                Block block = loc.getBlock();
+                if (block.getType() == Material.PLAYER_HEAD) {
+                    block.setType(Material.AIR);
+                }
             }
+            plugin.getServer().broadcastMessage("Ивент завершен! Подарки исчезли.");
+            eventActive = false;
+        }, 20 * 60 * 5); // 5 минут
+    }
+
+    private void announceGiftLocations() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage("Подарки раскиданы по миру. Найдите их!");
         }
     }
 
-    private void endEvent() {
-        if (!eventActive) {
-            return;
-        }
-        eventActive = false;
-
-        // Удаление голов
-        for (Location loc : spawnedGiftLocations) {
-            Block block = loc.getBlock();
-            if (block.getType() == Material.PLAYER_HEAD) {
-                block.setType(Material.AIR);
-            }
-        }
-        spawnedGiftLocations.clear();
-
-        Bukkit.broadcastMessage("Ивент закончился. Подарки были удалены. Спасибо за участие!");
+    public boolean isEventActive() {
+        return eventActive;
     }
 }
