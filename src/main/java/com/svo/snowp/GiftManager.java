@@ -4,10 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Random;
 
@@ -30,7 +28,7 @@ public class GiftManager {
             int y = getHighestY(world, x, z); // Находим высоту для спавна подарка
 
             Location location = new Location(world, x, y, z);
-            dropGift(location);
+            dropGift(world, location);
             announceGiftLocation(location);
         }
     }
@@ -39,7 +37,7 @@ public class GiftManager {
         return world.getHighestBlockYAt(x, z) + 1; // Высота над самым высоким блоком в координатах
     }
 
-    private void dropGift(Location location) {
+    private void dropGift(World world, Location location) {
         ItemStack gift = new ItemStack(Material.CHEST); // Подарок представлен сундуком
         world.dropItemNaturally(location, gift);
     }
