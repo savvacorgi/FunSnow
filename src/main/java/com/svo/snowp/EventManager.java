@@ -1,50 +1,40 @@
 package com.svo.snowp;
 
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class EventManager {
-    private static final long EVENT_DURATION = 5 * 60 * 20; // 5 минут в тиках
-    private static final long COOLDOWN_DURATION = 10 * 60 * 20; // 10 минут в тиках
 
-    private final Map<Player, Long> eventStartTimes = new HashMap<>();
-    private final Map<Player, Long> cooldownEndTimes = new HashMap<>();
+    private final Plugin plugin;
+    private final int EVENT_COOLDOWN = 6000; // Кулдаун в тиках (5 минут)
+    private final int EVENT_DURATION = 6000; // Длительность ивента в тиках (5 минут)
 
-    public boolean canStartEvent(Player player) {
-        long now = System.currentTimeMillis();
-        if (cooldownEndTimes.containsKey(player)) {
-            long cooldownEnd = cooldownEndTimes.get(player);
-            return now >= cooldownEnd;
-        }
-        return true;
+    public EventManager(Plugin plugin) {
+        this.plugin = plugin;
     }
 
-    public void startEvent(Player player) {
-        long now = System.currentTimeMillis();
-        eventStartTimes.put(player, now);
-        cooldownEndTimes.put(player, now + COOLDOWN_DURATION);
+    public void startEvent() {
+        Bukkit.broadcastMessage("Ивент начался!");
 
+        // Логика ивента
         new BukkitRunnable() {
             @Override
             public void run() {
-                endEvent(player);
+                Bukkit.broadcastMessage("Ивент завершился!");
             }
-        }.runTaskLater(Snowp.getInstance(), EVENT_DURATION);
+        }.runTaskLater(plugin, EVENT_DURATION);
+
+        // Планируем следующий запуск ивента
+        scheduleNextEvent();
     }
 
-    public boolean isEventActive(Player player) {
-        Long startTime = eventStartTimes.get(player);
-        if (startTime == null) {
-            return false;
-        }
-        return System.currentTimeMillis() - startTime < EVENT_DURATION;
-    }
-
-    public void endEvent(Player player) {
-        eventStartTimes.remove(player);
-        player.sendMessage("Event ended.");
+    private void scheduleNextEvent() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                startEvent();
+            }
+        }.runTaskLater(plugin, EVENT_COOLDOWN);
     }
 }
