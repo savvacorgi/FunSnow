@@ -1,42 +1,36 @@
 package com.svo.snowp;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Random;
 
 public class EventManager {
 
-    private final Plugin plugin;
-    private final int EVENT_COOLDOWN = 6000; // Кулдаун в тиках (5 минут)
-    private final int EVENT_DURATION = 6000; // Длительность ивента в тиках (5 минут)
-    private final GiftManager giftManager;
+    private final JavaPlugin plugin;
+    private final Random random = new Random();
+    private boolean eventActive = false;
 
-    public EventManager(Plugin plugin) {
+    public EventManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.giftManager = new GiftManager(plugin);
     }
 
     public void startEvent() {
-        Bukkit.broadcastMessage("Ивент начался! Подарки разбросаны по миру, ищите!");
+        if (eventActive) return; // Проверяем, не запущен ли уже ивент
 
-        // Спавн 5 подарков в случайных местах
-        giftManager.spawnGifts(5);
+        eventActive = true;
 
+        // Запуск ивента
         new BukkitRunnable() {
             @Override
             public void run() {
-                Bukkit.broadcastMessage("Ивент завершился! Все подарки собраны или исчезли.");
-                scheduleNextEvent(); // Планируем запуск следующего ивента после кулдауна
+                // Завершение ивента
+                eventActive = false;
+                Bukkit.getServer().broadcastMessage("§cИвент закончился!");
+                // Запуск следующего ивента через 5 минут
+                startEvent();
             }
-        }.runTaskLater(plugin, EVENT_DURATION);
-    }
-
-    private void scheduleNextEvent() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                startEvent(); // Запускаем следующий ивент после кулдауна
-            }
-        }.runTaskLater(plugin, EVENT_COOLDOWN);
+        }.runTaskLater(plugin, 5 * 60 * 20); // 5 минут
     }
 }
