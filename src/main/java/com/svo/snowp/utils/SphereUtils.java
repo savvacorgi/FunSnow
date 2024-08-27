@@ -33,6 +33,12 @@ public class SphereUtils {
         return item;
     }
 
+    public void openGiftBox(Player player, ItemStack item, Plugin plugin) {
+        // Логика открытия подарка (например, выпадение случайного предмета)
+        player.getInventory().addItem(new ItemStack(item.getType())); // Пример добавления предмета в инвентарь
+        player.sendMessage("Вы открыли подарок и получили: " + item.getType().name());
+    }
+    
     public Sphere getSphereFromItem(ItemStack item) {
         if (item == null || item.getItemMeta() == null || !item.getItemMeta().hasDisplayName()) {
             return null;
