@@ -15,10 +15,10 @@ public class Snowp extends JavaPlugin {
     public void onEnable() {
         // Инициализация утилит и менеджера событий
         sphereUtils = new SphereUtils();
-        eventManager = new EventManager(this);
+        eventManager = new EventManager(this, sphereUtils); // Передаем sphereUtils в EventManager
 
         // Регистрация слушателей событий
-        Bukkit.getPluginManager().registerEvents(new SphereListener(eventManager, sphereUtils), this);
+        Bukkit.getPluginManager().registerEvents(new SphereListener(sphereUtils), this); // Передаем только sphereUtils в SphereListener
 
         // Регистрация Water TNT и его рецепта
         WaterTNT waterTNT = new WaterTNT(this);
@@ -26,11 +26,16 @@ public class Snowp extends JavaPlugin {
         waterTNT.addRecipe();
 
         // Автоматический запуск ивента при старте сервера
-        eventManager.startEvent();
+        if (!eventManager.isEventActive()) {
+            eventManager.startEvent();
+        }
     }
 
     @Override
     public void onDisable() {
         // Логика при отключении плагина
+        if (eventManager.isEventActive()) {
+            eventManager.endEvent(); // Завершаем ивент при отключении
+        }
     }
 }
